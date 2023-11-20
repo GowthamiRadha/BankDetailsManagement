@@ -130,6 +130,13 @@ def main():
                     
                     # Display the user details in a table
                     st.dataframe(user_df, height=len(user_details)*40)  # Adjust the height based on the number of rows
+                    # Add a download button to allow users to download the DataFrame as a CSV file
+                    st.download_button(
+                        label="Download User Details (CSV)",
+                        data=user_df.to_csv(index=False),
+                        file_name="user_details.csv",
+                        key="download_user_details"
+                    )
                 else:
                     st.warning("No user details found.")
             elif selected_option == "Add Company Details":
@@ -184,6 +191,12 @@ def main():
                         # Display company details in a tabular format
                         company_df = pd.DataFrame(company_details, columns=["Company Name", "Company Bank Name", "Company Account Number", "Company Mail ID", "Company Phone Number"])
                         st.dataframe(company_df, height=len(company_details) * 40)  # Adjust the height based on the number of rows
+                        st.download_button(
+                            label="Download Company Details (CSV)",
+                            data=company_df.to_csv(index=False),
+                            file_name="company_details.csv",
+                            key="download_company_details"
+                        )
                     else:
                         st.warning("No company details found.")
 
@@ -263,6 +276,12 @@ def main():
                             "CompanyMailID", "CompanyPhoneNumber"])
                         st.write("Matching Employee Details:")
                         st.dataframe(df)
+                        st.download_button(
+                            label="Download Employee Details (CSV)",
+                            data=df.to_csv(index=False),
+                            file_name="employee_details.csv",
+                            key="download_employee_details"
+                        )
                     else:
                         st.warning("No matching employee details found.")
             elif selected_option == "Update Employee Details":
@@ -413,6 +432,12 @@ def main():
                             "CompanyMailID", "CompanyPhoneNumber"])
                         st.write("Matching Employee Details:")
                         st.dataframe(df)
+                        st.download_button(
+                            label="Download Employee Details (CSV)",
+                            data=df.to_csv(index=False),
+                            file_name="employee_details.csv",
+                            key="download_employee_details"
+                        )
                     else:
                         st.warning("No matching employee details found.")
             elif selected_option == "Update Employee Details":
