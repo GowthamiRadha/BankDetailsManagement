@@ -21,7 +21,6 @@ st.sidebar.info(
 authenticator = None
 
 
-@st.cache_data
 def get_user_credentials():
     # Fetch and return user credentials from the database
     users = db.fetch_all_users()
