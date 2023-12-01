@@ -10,6 +10,7 @@ AWS_REGION = 'ap-south-1'  # Replace with your desired AWS region
 # Initialize a DynamoDB client
 dynamodb = boto3.client('dynamodb', region_name=AWS_REGION, aws_access_key_id=AWS_ACCESS_KEY_ID, aws_secret_access_key=AWS_SECRET_ACCESS_KEY)
 
+@st.cache_data
 def fetch_all_users():
     dynamodb_table_name = 'users'  # Replace with your DynamoDB table name
     
@@ -37,7 +38,7 @@ def fetch_all_users():
         st.error(f"An error occurred while fetching users from DynamoDB: {str(e)}")
         return []
 
-
+@st.cache_data
 def get_user_role(username):
     # Initialize DynamoDB client
     dynamodb = boto3.client('dynamodb', region_name=AWS_REGION, aws_access_key_id=AWS_ACCESS_KEY_ID, aws_secret_access_key=AWS_SECRET_ACCESS_KEY)

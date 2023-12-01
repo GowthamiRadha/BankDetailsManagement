@@ -2,6 +2,7 @@ import streamlit as st
 import mysql.connector
 
 # Function to establish a database connection
+@st.cache_resource
 def create_db_connection():
     connection = mysql.connector.connect(
         host = st.secrets["AWS_HOSTNAME"],
@@ -51,6 +52,7 @@ def save_employee_details(beneficiary_name, account_number, beneficiary_bank_nam
 
 
 # Function to fetch unique company names from the Company Database
+@st.cache_data
 def fetch_company_names():
     try:
         # Create a database connection
@@ -78,6 +80,7 @@ def fetch_company_names():
         return []
 
 # Function to fetch bank names based on the selected company
+@st.cache_data
 def fetch_bank_names(selected_company):
     try:
         # Create a database connection
@@ -110,6 +113,7 @@ def fetch_bank_names(selected_company):
         return [] 
 
 # Function to fetch unique company names from the Company Database
+@st.cache_data
 def get_unique_company_names():
     try:
         # Create a database connection
@@ -137,6 +141,7 @@ def get_unique_company_names():
         return []
 
 # Function to fetch unique bank names from the Company Database
+@st.cache_data
 def get_unique_bank_names():
     try:
         # Create a database connection
@@ -164,6 +169,7 @@ def get_unique_bank_names():
         return []
 
 # Function to get matching employee details based on Company Name and Company Bank Name
+@st.cache_data
 def get_matching_employee_details(company_name=None, company_bank_name=None):
     try:
         # Create a database connection
@@ -241,6 +247,7 @@ def bulk_update_employee_details(updated_employee_details):
         return f"Employee details are not updated due to an error: {str(e)}"
 
 # Function to get only matching employee details based on Company Name and Company Bank Name
+@st.cache_data
 def get_only_matching_employee_details(company_name=None, company_bank_name=None):
     try:
         # Create a database connection
@@ -320,6 +327,7 @@ def save_company_details(company_name, company_bank_name, company_account_number
     except Exception as e:
         return f"Company details are not saved due to an error: {str(e)}"
 
+@st.cache_data
 def get_company_details():
     try:
         # Create a database connection

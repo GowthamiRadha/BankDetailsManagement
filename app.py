@@ -20,12 +20,11 @@ st.sidebar.info(
 # Initialize the authenticator outside the main function
 authenticator = None
 
-def get_authenticator():
-    with open('.streamlit/config.yaml') as file:
-        config = yaml.load(file, Loader=yaml.SafeLoader)
 
+@st.cache_data
+def get_user_credentials():
+    # Fetch and return user credentials from the database
     users = db.fetch_all_users()
-
     credentials = {}
     credentials['usernames'] = {}
 
@@ -49,6 +48,14 @@ def get_authenticator():
         credentials['usernames'][username]['name'] = name
         credentials['usernames'][username]['password'] = password
         credentials['usernames'][username]['role'] = role  # Store the 'role' attribute
+    return credentials
+
+
+def get_authenticator():
+    with open('.streamlit/config.yaml') as file:
+        config = yaml.load(file, Loader=yaml.SafeLoader)
+
+    credentials = get_user_credentials()
 
     authenticator = stauth.Authenticate(
                 credentials,
