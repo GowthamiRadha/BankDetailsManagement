@@ -18,6 +18,8 @@ def save_employee_details(beneficiary_name, account_number, beneficiary_bank_nam
         # Create a database connection
         connection = create_db_connection()
         cursor = connection.cursor()
+        print("connection ",connection)
+        print("cursor ",cursor)
 
         # Define the SQL query to insert data into the Employee table
         insert_query = """
@@ -290,6 +292,8 @@ def save_company_details(company_name, company_bank_name, company_account_number
         # Create a database connection
         connection = create_db_connection()
         cursor = connection.cursor()
+        print("connection in save company details ",connection)
+        print("cursor in save company details ",cursor)
 
         # Define the SQL query to insert data into the Company table
         insert_query = """
