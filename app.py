@@ -102,6 +102,7 @@ def main():
                     role = st.selectbox("Role",('user','admin'))
                     submitted = st.form_submit_button("Register")
                     if submitted:
+                        print("Submitted User Form")
                         if name=="" or name is None:
                             st.error("Name cannot be empty")
                         elif username=="" or username is None:
@@ -109,7 +110,9 @@ def main():
                         elif len(password)<6:
                             st.error("Password must have atleast 6 characters.")
                         else:
+                            print("Going to call Save User Details")
                             details = db.save_user(email, name, password, role)
+                            print("Response from DB Call", details)
                             success_message = st.empty()
                             success_message.success(details)
                             time.sleep(5)
@@ -117,8 +120,10 @@ def main():
             elif selected_option == "Get User Details":
                 st.subheader("User Details")
                 
+                print("Before Calling Fetch all Users")
                 # Fetch all user details using db.fetch_all_users
                 user_details = db.fetch_all_users()
+                print("Response from Get All Users ", user_details)
 
                 if user_details:
                     # Create a DataFrame from the fetched data
@@ -151,6 +156,7 @@ def main():
 
                     submitted = st.form_submit_button("Submit")
                     if submitted:
+                        print("Submitted Company form with Details")
                         # Validate and save company details here
                         if not company_name or not company_bank_name or not company_account_number:
                             st.error("Please fill in all required fields.")
@@ -162,6 +168,7 @@ def main():
                             # Make sure to handle database errors and provide appropriate feedback to the user
                             success_message = st.empty()
                             try:
+                                print("Before Calling Save Company details")
                                 details = bank_db.save_company_details(
                                     company_name,
                                     company_bank_name,
@@ -169,6 +176,7 @@ def main():
                                     company_mail_id,
                                     company_phone_number
                                 )
+                                print("Response from save_company_details ", details)
                                 success_message.success("Company details saved successfully.")
                             except Exception as e:
                                 st.error(f"An error occurred while saving company details: {str(e)}")
@@ -227,6 +235,7 @@ def main():
 
                     submitted = st.form_submit_button("Submit")
                     if submitted:
+                        print("After submitting Employee Form")
                         # Validate and save employee details here
                         if not beneficiary_name or not account_number or not beneficiary_ifsc_code:
                             st.error("Please fill in all required fields.")
@@ -237,9 +246,11 @@ def main():
                             # Save the employee details to the database using selected_company and selected_bank
                             # You need to implement the database interaction code here
                             # You can use selected_company and selected_bank for database operations
+                            print("Before Calling Save Employee Details")
+                            success_message = st.empty()
                             details = bank_db.save_employee_details(beneficiary_name, account_number, beneficiary_bank_name, beneficiary_ifsc_code,
                                         transaction_type, amount, narration, selected_company, selected_bank)
-                            success_message = st.empty()
+                            print("Response from Save employee Details ", details)
                             success_message.success("Employee details saved successfully.")
                             # Clear the success message after 5 seconds
                             st.experimental_set_query_params()
