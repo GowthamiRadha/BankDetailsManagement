@@ -96,7 +96,7 @@ def main():
         if user_role == "admin":
 
             # Sidebar navigation options for all users
-            menu = ["Add User", "Get User Details","Add Company Details","Get Company Details","Add Employee Details", "Get Employee Details","Update Employee Details"]
+            menu = ["Add User", "Delete User","Get User Details","Add Company Details","Delete Company Details","Get Company Details","Add Employee Details", "Get Employee Details","Update Employee Details"]
             selected_option = st.sidebar.selectbox("NavigationOptions", menu,key="unique")
             st.sidebar.markdown("---")  # Separator line
             if selected_option == "Add User":
@@ -108,7 +108,6 @@ def main():
                     role = st.selectbox("Role",('user','admin'))
                     submitted = st.form_submit_button("Register")
                     if submitted:
-                        print("Submitted User Form")
                         if name=="" or name is None:
                             st.error("Name cannot be empty")
                         elif username=="" or username is None:
@@ -116,20 +115,38 @@ def main():
                         elif len(password)<6:
                             st.error("Password must have atleast 6 characters.")
                         else:
-                            print("Going to call Save User Details")
                             details = db.save_user(email, name, password, role)
-                            print("Response from DB Call", details)
                             success_message = st.empty()
                             success_message.success(details)
                             time.sleep(5)
                             success_message.empty()
+            elif selected_option == "Delete User":
+                st.subheader("Delete User")
+                with st.form("deleteUserForm", clear_on_submit=True):
+                    # Fetch all user details for selection
+                    user_details = db.fetch_all_users()
+                    usernames = [user['username'] for user in user_details]
+                    selected_user = st.selectbox("Select User to Delete", usernames)
+                    submitted = st.form_submit_button("Delete User")
+
+                    if submitted:
+                        if not selected_user:
+                            st.error("Please select a user to delete.")
+                        else:
+                            # Delete the selected user from the database
+                            delete_result = db.delete_user(selected_user)
+                            if delete_result:
+                                success_message = st.empty()
+                                success_message.success(f"User '{selected_user}' has been deleted.")
+                                time.sleep(5)
+                                success_message.empty()
+                            else:
+                                st.error(f"Failed to delete user '{selected_user}'.")
             elif selected_option == "Get User Details":
                 st.subheader("User Details")
                 
-                print("Before Calling Fetch all Users")
                 # Fetch all user details using db.fetch_all_users
                 user_details = db.fetch_all_users()
-                print("Response from Get All Users ", user_details)
 
                 if user_details:
                     # Create a DataFrame from the fetched data
@@ -162,7 +179,6 @@ def main():
 
                     submitted = st.form_submit_button("Submit")
                     if submitted:
-                        print("Submitted Company form with Details")
                         # Validate and save company details here
                         if not company_name or not company_bank_name or not company_account_number:
                             st.error("Please fill in all required fields.")
@@ -174,7 +190,6 @@ def main():
                             # Make sure to handle database errors and provide appropriate feedback to the user
                             success_message = st.empty()
                             try:
-                                print("Before Calling Save Company details")
                                 details = bank_db.save_company_details(
                                     company_name,
                                     company_bank_name,
@@ -182,13 +197,40 @@ def main():
                                     company_mail_id,
                                     company_phone_number
                                 )
-                                print("Response from save_company_details ", details)
                                 success_message.success("Company details saved successfully.")
                             except Exception as e:
                                 st.error(f"An error occurred while saving company details: {str(e)}")
                             # Clear the success message after 5 seconds
                             time.sleep(5)
                             success_message.empty()
+            elif selected_option == "Delete Company Details":
+                st.subheader("Delete Company Details")
+
+                with st.form("deleteCompanyForm", clear_on_submit=True):
+                    # Fetch all company details for selection (you need to implement this based on your database)
+                    # For example, you can fetch a list of company names and bank names
+                    company_names = bank_db.get_unique_company_names()  # Replace with your actual function to fetch company names
+                    bank_names = bank_db.get_unique_bank_names()  # Replace with your actual function to fetch bank names
+                    
+                    selected_company_name = st.selectbox("Select Company Name to Delete", [""]+company_names)
+                    selected_bank_name = st.selectbox("Select Bank Name to Delete", [""]+bank_names)
+                    
+                    submitted = st.form_submit_button("Delete Company Details")
+
+                    if submitted:
+                        if not selected_company_name and not selected_bank_name:
+                            st.error("Please select atleast one option to delete.")
+                        else:
+                            # Delete the selected company details from the database
+                            if selected_bank_name == "":
+                                selected_bank_name = None
+                            if selected_company_name == "":
+                                selected_company_name = None
+                            delete_result = bank_db.delete_company_details(selected_company_name, selected_bank_name)
+                            if delete_result:
+                                st.success(delete_result)
+                            else:
+                                st.error("Failed to delete company details.")
             elif selected_option == "Get Company Details":
                 st.subheader("Get Company Details")
 
@@ -241,7 +283,6 @@ def main():
 
                     submitted = st.form_submit_button("Submit")
                     if submitted:
-                        print("After submitting Employee Form")
                         # Validate and save employee details here
                         if not beneficiary_name or not account_number or not beneficiary_ifsc_code:
                             st.error("Please fill in all required fields.")
@@ -252,11 +293,9 @@ def main():
                             # Save the employee details to the database using selected_company and selected_bank
                             # You need to implement the database interaction code here
                             # You can use selected_company and selected_bank for database operations
-                            print("Before Calling Save Employee Details")
                             success_message = st.empty()
                             details = bank_db.save_employee_details(beneficiary_name, account_number, beneficiary_bank_name, beneficiary_ifsc_code,
                                         transaction_type, amount, narration, selected_company, selected_bank)
-                            print("Response from Save employee Details ", details)
                             success_message.success("Employee details saved successfully.")
                             # Clear the success message after 5 seconds
                             st.experimental_set_query_params()
@@ -361,7 +400,6 @@ def main():
                             if not updated_details.empty:
                                 updated_details = updated_details.reset_index()  # Reset the index
                                 updated_details = updated_details.to_dict(orient='records')
-                                print(updated_details)
                                 update_status = bank_db.bulk_update_employee_details(updated_details)
                                 st.session_state.update_mode = False  # Reset the form state
                                 success_message = st.empty()

@@ -88,3 +88,27 @@ def save_user(username, name, password, role):
         return "User saved successfully."
     except Exception as e:
         return "User is not saved!!!!"
+    
+def delete_user(username):
+    # DynamoDB table name
+    dynamodb_table_name = 'users'
+
+    try:
+        # Check if the user exists in the table
+        existing_user = dynamodb.get_item(
+            TableName=dynamodb_table_name,
+            Key={'username': {'S': username}}
+        )
+
+        if 'Item' not in existing_user:
+            return False  # User not found
+
+        # If the user exists, delete them from DynamoDB
+        dynamodb.delete_item(
+            TableName=dynamodb_table_name,
+            Key={'username': {'S': username}}
+        )
+
+        return True  # User deleted successfully
+    except Exception as e:
+        return False  # Error occurred during deletion
